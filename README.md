@@ -1,5 +1,6 @@
 # AWS-Snowflake-integration-project
 
+Firstly make the file ready by cleanisng and making basic transformations using AWS tools( I used lambda and glue) and put it in the S3 bucket. Didn't mention this step as the main focus of this project is to integrate AWS with Snowflake
 This project is a simple integration of aws and snowflake
 
 step 1 :  create an AWS bucket
