@@ -1,0 +1,64 @@
+-- to create database
+create database demo;
+create schema demo_2024;
+
+--to create integration
+create or replace storage integration aws_s3_integration 
+type = external_stage
+storage_provider= 'S3'
+enabled = true
+storage_aws_role_arn = 'arn:aws:iam::#########:role/project####-role'
+storage_allowed_locations =('s3://project#####/');
+
+
+--checks
+show integrations
+desc integration aws_s3_integration 
+
+--to grant permissions 
+grant usage on integration aws_s3_integration to role accountadmin;
+
+
+--creating file format
+create or replace file format demo_format
+type = 'CSV'
+field_delimiter= ','
+skip_header =1;
+
+--to create external stage
+create or replace stage demo_aws_stage
+storage_integration = aws_s3_integration
+file_format = demo_format
+url = 's3://project####/';
+
+
+--check external stage entities
+list @demo_aws_stage
+
+--creating table
+create or replace temporary table demo_revenue_info1 (
+ EDW_SOURCE_ID string,
+ PLANT_CODE integer, 
+ MONTH_YEAR string,
+ REVENUE_EXTERNAL float,
+ REVENUE_ALLIED string
+ );
+
+ 
+
+--checking if table is created
+ select * from demo_revenue_info1;
+
+--loading data into the created table
+copy into demo_revenue_info1 from  @demo_aws_stage/REVENUE_HISTORY.csv
+file_format = (format_name = demo_format);
+
+
+--checking if table is loaded
+ select * from demo_revenue_info1;
+
+
+--samples for visualization 
+select month_year, revenue_external from demo_revenue_info1
+select revenue_external from demo_revenue_info1 order by revenue_external
+ 
